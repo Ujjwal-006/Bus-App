@@ -10,6 +10,7 @@ urlpatterns = [
     
     # 2. Login Page (login.html)
     path('login/', views.login_page, name='login_user'),
+    path('logout/', views.logout_user, name='logout_user'),
     
     # 3. Booking Page (booking.html)
     path('booking/', views.booking_page, name='my_bookings'),
@@ -22,4 +23,12 @@ urlpatterns = [
     
     # 6. Settings Page (accont setting.html)
     path('accountsetting/', views.accontsetting_page, name='account_settings'),
+
+    path('payment/', views.payment_page, name='payment'),
+
+    path('tracking/', views.live_tracking_page, name='live_tracking'),
+
+    # 7. Seat Selection Page
+    path('seats/', views.seat_selection_page, name='seat_selection'),
+
 ]

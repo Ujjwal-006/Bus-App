@@ -118,3 +118,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Suppress the primary key warning from Django system check
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Redirect to login page when @login_required is triggered
+LOGIN_URL = '/login/'

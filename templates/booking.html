@@ -240,9 +240,9 @@
                     <div class="bg-white p-2 rounded border border-outline-variant/30">
                         <img alt="QR Code" class="w-20 h-20 opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD2MhR18nFqCkM87S1Q1RsUavDDrmHIhzYDk8ftxsYVGlN9uRNtMSTseFIaERuz3xhgBdUD_LRKVqKfpJ10J795asPy1DIuVR6XUd5vOhWKYYJ-Xf-bwTgw368FJtcJv-9HiY0gGGniDLmlg_izNhHv3gzRRE2ciScz6-4E74F3VJzMdI1P4nReEew619NnDU6dfUGsFwJrwg0-50Wlzg_H-IQHAwy7ZW7ktLRaysebZ8EbjSThJb1"/>
                     </div>
-                    <button class="bg-primary text-white px-6 py-3 font-label-caps text-label-caps rounded-lg hover:bg-secondary transition-colors ml-auto md:ml-0">
-                        Details
-                    </button>
+                    <a href="{% url 'transit:live_tracking' %}" class="inline-block bg-primary text-white px-6 py-3 font-label-caps text-label-caps rounded-lg hover:bg-secondary transition-colors ml-auto md:ml-0 text-center">
+                       Track Bus
+                    </a>
                 </div>
             </div>
         </div>
@@ -263,31 +263,38 @@
 <!-- Section: Past Trips -->
 <div>
 <h2 class="font-headline-md text-headline-md mb-8 text-on-surface-variant">Past Journeys</h2>
-<div class="space-y-4 opacity-70 grayscale-[0.5] hover:grayscale-0 transition-all">
-<!-- Past Card 1 -->
-<div class="border border-outline-variant/10 bg-surface-container-low p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-<div class="flex-1">
-<div class="flex items-center gap-3 mb-2">
-<span class="status-badge-completed px-3 py-1 text-label-caps font-label-caps rounded-lg">Completed</span>
-<span class="font-label-caps text-label-caps text-outline">Ref: TJ-88123</span>
+<div class="space-y-4">
+
+{% for trip in past_trips %}
+<div class="border border-outline-variant/10 bg-surface-container-low p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6 opacity-80 hover:opacity-100 transition-all">
+    <div class="flex-1">
+        <div class="flex items-center gap-3 mb-2">
+            {% if trip.status == 'Completed' %}
+            <span class="status-badge-completed px-3 py-1 text-label-caps font-label-caps rounded-lg">Completed</span>
+            {% elif trip.status == 'Cancelled' %}
+            <span class="status-badge-cancelled px-3 py-1 text-label-caps font-label-caps rounded-lg">Cancelled</span>
+            {% else %}
+            <span class="px-3 py-1 text-label-caps font-label-caps rounded-lg bg-surface-container text-outline">{{ trip.status }}</span>
+            {% endif %}
+            <span class="font-label-caps text-label-caps text-outline">Ref: {{ trip.reference }}</span>
+        </div>
+        <h3 class="font-headline-md text-[20px]">{{ trip.route_from }} – {{ trip.route_to }}</h3>
+        <p class="text-body-md text-on-surface-variant font-mono">{{ trip.date|date:"d M Y" }} • {{ trip.time|time:"H:i" }} • Seat {{ trip.seat }}</p>
+    </div>
+    <div class="flex gap-3">
+        <button onclick="showReceipt('{{ trip.reference }}','{{ trip.route_from }}','{{ trip.route_to }}','{{ trip.date|date:'d M Y' }}','{{ trip.seat }}','{{ trip.status }}')"
+                class="border border-primary text-primary px-4 py-2 font-label-caps text-label-caps rounded hover:bg-primary hover:text-white transition-colors">
+                Receipt
+        </button>
+    </div>
 </div>
-<h3 class="font-headline-md text-[20px]">Delhi – Mumbai</h3>
-<p class="text-body-md text-on-surface-variant font-mono">12 SEP 2024 • 18:00</p>
+{% empty %}
+<div class="p-8 text-center border-2 border-dashed border-outline-variant/30 rounded-lg">
+    <span class="material-symbols-outlined text-outline text-4xl mb-4">history</span>
+    <p class="text-on-surface-variant font-body-md">No past journeys yet.</p>
 </div>
-<button class="border border-primary text-primary px-4 py-2 font-label-caps text-label-caps rounded hover:bg-primary hover:text-white transition-colors">Receipt</button>
-</div>
-<!-- Past Card 2 -->
-<div class="border border-outline-variant/10 bg-surface-container-low p-6 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-<div class="flex-1">
-<div class="flex items-center gap-3 mb-2">
-<span class="status-badge-cancelled px-3 py-1 text-label-caps font-label-caps rounded-lg">Cancelled</span>
-<span class="font-label-caps text-label-caps text-outline">Ref: TJ-87654</span>
-</div>
-<h3 class="font-headline-md text-[20px]">Hyderabad – Pune</h3>
-<p class="text-body-md text-on-surface-variant font-mono">05 SEP 2024 • 07:45</p>
-</div>
-<button class="border border-primary text-primary px-4 py-2 font-label-caps text-label-caps rounded hover:bg-primary hover:text-white transition-colors">Rebook</button>
-</div>
+{% endfor %}
+
 </div>
 </div>
 </div>
@@ -318,5 +325,75 @@
                 card.style.borderColor = 'rgba(226, 240, 255, 1)';
             });
         });
+
+        // ── Receipt Modal ───────────────────────────────────────
+        function showReceipt(ref, from, to, date, seat, status) {
+            document.getElementById('r-ref').textContent    = ref;
+            document.getElementById('r-route').textContent  = from + ' → ' + to;
+            document.getElementById('r-date').textContent   = date;
+            document.getElementById('r-seat').textContent   = seat;
+            document.getElementById('r-status').textContent = status;
+            document.getElementById('receipt-modal').classList.remove('hidden');
+            document.getElementById('receipt-modal').classList.add('flex');
+        }
+        function closeReceipt() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+            document.getElementById('receipt-modal').classList.remove('flex');
+        }
+        function printReceipt() {
+            window.print();
+        }
     </script>
+
+<!-- Receipt Modal Overlay -->
+<div id="receipt-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 relative">
+        <!-- Close -->
+        <button onclick="closeReceipt()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <div class="text-2xl font-bold tracking-widest text-blue-900 mb-1">TRAJET</div>
+            <div class="text-xs text-gray-400 font-semibold uppercase tracking-widest">Journey Receipt</div>
+        </div>
+        <!-- Dashed separator -->
+        <div class="border-t-2 border-dashed border-gray-200 mb-6"></div>
+        <!-- Details -->
+        <div class="space-y-4 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-400 font-semibold uppercase tracking-widest text-xs">Reference</span>
+                <span class="font-bold text-blue-900 font-mono" id="r-ref"></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400 font-semibold uppercase tracking-widest text-xs">Route</span>
+                <span class="font-bold text-blue-900 text-right" id="r-route"></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400 font-semibold uppercase tracking-widest text-xs">Date</span>
+                <span class="font-bold text-blue-900" id="r-date"></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400 font-semibold uppercase tracking-widest text-xs">Seat</span>
+                <span class="font-bold text-blue-900" id="r-seat"></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400 font-semibold uppercase tracking-widest text-xs">Status</span>
+                <span class="font-bold text-blue-900" id="r-status"></span>
+            </div>
+        </div>
+        <!-- Dashed separator -->
+        <div class="border-t-2 border-dashed border-gray-200 mt-6 mb-6"></div>
+        <!-- Buttons -->
+        <div class="flex gap-3">
+            <button onclick="printReceipt()" class="flex-1 py-3 bg-blue-950 text-white text-xs font-bold tracking-widest uppercase rounded-xl hover:bg-blue-800 transition-colors">
+                🖨 Print
+            </button>
+            <button onclick="closeReceipt()" class="flex-1 py-3 border border-gray-300 text-gray-600 text-xs font-bold tracking-widest uppercase rounded-xl hover:bg-gray-50 transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
 </body></html>
