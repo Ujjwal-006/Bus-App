@@ -461,28 +461,36 @@
                                         </div>
                                         <form class="space-y-6" method="POST" action="">
                                                 {% csrf_token %}
-                                                <div class="space-y-2">
-                                                        <label
-                                                                class="font-label-caps text-[10px] text-primary-container uppercase tracking-widest">DEPARTURE</label>
-                                                        <div class="relative" id="dep-wrapper">
-                                                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]"
-                                                                        style="font-variation-settings: 'FILL' 0;">my_location</span>
-                                                                <input id="dep-input" name="departure" autocomplete="off"
-                                                                        class="w-full h-12 pl-12 pr-4 bg-secondary-fixed/20 border border-secondary-fixed rounded-sm focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors font-body-md text-body-md text-primary-container placeholder:text-outline"
-                                                                        placeholder="City or Station" type="text" />
-                                                                <ul id="dep-list" class="absolute z-50 w-full bg-white border border-secondary-fixed rounded-sm shadow-xl max-h-48 overflow-y-auto hidden" style="top:100%; margin-top:4px;"></ul>
+                                                <div class="relative flex flex-col gap-6" id="swap-container">
+                                                        <div class="space-y-2 transition-transform duration-300" id="dep-col" style="order: 1;">
+                                                                <label
+                                                                        class="font-label-caps text-[10px] text-primary-container uppercase tracking-widest">DEPARTURE</label>
+                                                                <div class="relative" id="dep-wrapper">
+                                                                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]"
+                                                                                style="font-variation-settings: 'FILL' 0;">my_location</span>
+                                                                        <input id="dep-input" name="departure" autocomplete="off"
+                                                                                class="w-full h-12 pl-12 pr-4 bg-secondary-fixed/20 border border-secondary-fixed rounded-sm focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors font-body-md text-body-md text-primary-container placeholder:text-outline"
+                                                                                placeholder="City or Station" type="text" />
+                                                                        <ul id="dep-list" class="absolute z-50 w-full bg-white border border-secondary-fixed rounded-sm shadow-xl max-h-48 overflow-y-auto hidden" style="top:100%; margin-top:4px;"></ul>
+                                                                </div>
                                                         </div>
-                                                </div>
-                                                <div class="space-y-2">
-                                                        <label
-                                                                class="font-label-caps text-[10px] text-primary-container uppercase tracking-widest">DESTINATION</label>
-                                                        <div class="relative" id="dest-wrapper">
-                                                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]"
-                                                                        style="font-variation-settings: 'FILL' 0;">location_on</span>
-                                                                <input id="dest-input" name="destination" autocomplete="off"
-                                                                        class="w-full h-12 pl-12 pr-4 bg-secondary-fixed/20 border border-secondary-fixed rounded-sm focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors font-body-md text-body-md text-primary-container placeholder:text-outline"
-                                                                        placeholder="City or Station" type="text" />
-                                                                <ul id="dest-list" class="absolute z-50 w-full bg-white border border-secondary-fixed rounded-sm shadow-xl max-h-48 overflow-y-auto hidden" style="top:100%; margin-top:4px;"></ul>
+
+                                                        <!-- Swap Button -->
+                                                        <button type="button" onclick="swapLocations()" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white text-secondary rounded-full flex items-center justify-center hover:bg-secondary hover:text-white transition-all active:rotate-180 shadow-md border border-outline-variant/20 cursor-pointer" title="Swap Locations">
+                                                                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">swap_vert</span>
+                                                        </button>
+
+                                                        <div class="space-y-2 transition-transform duration-300" id="dest-col" style="order: 3;">
+                                                                <label
+                                                                        class="font-label-caps text-[10px] text-primary-container uppercase tracking-widest">DESTINATION</label>
+                                                                <div class="relative" id="dest-wrapper">
+                                                                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary text-[20px]"
+                                                                                style="font-variation-settings: 'FILL' 0;">location_on</span>
+                                                                        <input id="dest-input" name="destination" autocomplete="off"
+                                                                                class="w-full h-12 pl-12 pr-4 bg-secondary-fixed/20 border border-secondary-fixed rounded-sm focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none transition-colors font-body-md text-body-md text-primary-container placeholder:text-outline"
+                                                                                placeholder="City or Station" type="text" />
+                                                                        <ul id="dest-list" class="absolute z-50 w-full bg-white border border-secondary-fixed rounded-sm shadow-xl max-h-48 overflow-y-auto hidden" style="top:100%; margin-top:4px;"></ul>
+                                                                </div>
                                                         </div>
                                                 </div>
                                                 <div class="space-y-2">
@@ -665,6 +673,24 @@
         setupAutocomplete('dep-input',  'dep-list');
         setupAutocomplete('dest-input', 'dest-list');
         </script>
+        <script>
+                function swapLocations() {
+                        const depCol = document.getElementById('dep-col');
+                        const destCol = document.getElementById('dest-col');
+                        if (depCol && destCol) {
+                                // Swap flex order so the entire column moves visually
+                                const currentDepOrder = depCol.style.order || "1";
+                                if (currentDepOrder === "1") {
+                                        depCol.style.order = "3";
+                                        destCol.style.order = "1";
+                                } else {
+                                        depCol.style.order = "1";
+                                        destCol.style.order = "3";
+                                }
+                        }
+                }
+        </script>
+
 </body>
 
 </html>

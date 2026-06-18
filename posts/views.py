@@ -16,17 +16,17 @@ from .models import wallet
 # ── Load all cities from the CSV file ──────────────────────────────────────────
 def get_cities():
     cities = []
-    # Path: project_root/city.csv/Indian Cities Database.csv
+    # Path: project_root/city.csv/cities_r2.csv
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    csv_path = os.path.join(base_dir, 'city.csv', 'Indian Cities Database.csv')
+    csv_path = os.path.join(base_dir, 'city.csv', 'cities_r2.csv')
     try:
         # utf-8-sig strips the BOM character that Excel adds to CSV files.
         # Without this, the first column 'City' becomes '\ufeffCity' and nothing matches.
         with open(csv_path, newline='', encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
             for row in reader:
-                # Try 'City' column; strip whitespace to handle sloppy headers
-                name = (row.get('City') or row.get(' City') or '').strip()
+                # Try 'name_of_city' or 'City' column; strip whitespace to handle sloppy headers
+                name = (row.get('name_of_city') or row.get('City') or row.get(' City') or '').strip()
                 if name:
                     cities.append(name)
     except FileNotFoundError:
@@ -64,6 +64,17 @@ def booking_page(request):
         'past_trips': past_trips,
     }
     return render(request, 'booking.html', context)
+
+@login_required(login_url='transit:login_user')
+def cancel_booking(request, reference):
+    if request.method == 'POST':
+        # Find the booking belonging to the user with the given reference
+        booking = Booking.objects.filter(user=request.user, reference=reference).first()
+        if booking:
+            booking.status = 'Cancelled'
+            booking.save()
+            messages.success(request, f"Booking {reference} has been cancelled.")
+    return redirect('transit:my_bookings')
 
 
 @login_required(login_url='transit:login_user')

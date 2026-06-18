@@ -240,9 +240,17 @@
                     <div class="bg-white p-2 rounded border border-outline-variant/30">
                         <img alt="QR Code" class="w-20 h-20 opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD2MhR18nFqCkM87S1Q1RsUavDDrmHIhzYDk8ftxsYVGlN9uRNtMSTseFIaERuz3xhgBdUD_LRKVqKfpJ10J795asPy1DIuVR6XUd5vOhWKYYJ-Xf-bwTgw368FJtcJv-9HiY0gGGniDLmlg_izNhHv3gzRRE2ciScz6-4E74F3VJzMdI1P4nReEew619NnDU6dfUGsFwJrwg0-50Wlzg_H-IQHAwy7ZW7ktLRaysebZ8EbjSThJb1"/>
                     </div>
-                    <a href="{% url 'transit:live_tracking' %}" class="inline-block bg-primary text-white px-6 py-3 font-label-caps text-label-caps rounded-lg hover:bg-secondary transition-colors ml-auto md:ml-0 text-center">
-                       Track Bus
-                    </a>
+                    <div class="flex flex-col gap-2 ml-auto md:ml-0">
+                        <a href="{% url 'transit:live_tracking' %}" class="inline-block bg-primary text-white px-6 py-2 font-label-caps text-label-caps rounded-lg hover:bg-secondary transition-colors text-center">
+                           Track Bus
+                        </a>
+                        <form method="POST" action="{% url 'transit:cancel_booking' trip.reference %}" onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                            {% csrf_token %}
+                            <button type="submit" class="w-full inline-block bg-red-50 text-red-600 border border-red-200 px-6 py-2 font-label-caps text-label-caps rounded-lg hover:bg-red-100 transition-colors text-center">
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

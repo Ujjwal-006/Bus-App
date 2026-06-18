@@ -14,6 +14,7 @@ urlpatterns = [
     
     # 3. Booking Page (booking.html)
     path('booking/', views.booking_page, name='my_bookings'),
+    path('booking/cancel/<str:reference>/', views.cancel_booking, name='cancel_booking'),
     
     # 4. Alerts Page (alert.html)
     path('alerts/', views.alert_page, name='alerts'),
